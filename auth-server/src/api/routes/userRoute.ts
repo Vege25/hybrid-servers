@@ -3,6 +3,8 @@ import {
   checkEmailExists,
   checkToken,
   checkUsernameExists,
+  friendsGet,
+  pendingFriendsGet,
   userDelete,
   userDeleteAsAdmin,
   userGet,
@@ -351,5 +353,53 @@ router.get(
   param('username').isString().escape(),
   checkUsernameExists
 );
+
+/**
+ * @api {get} /friends/:id Get User List
+ * @apiName friendsGet
+ * @apiGroup Friends
+ *
+ * @apiSuccess {Object[]} users List of users.
+ * @apiSuccess {Number} users.user_id User's unique ID.
+ * @apiSuccess {String} users.username User's username.
+ * @apiSuccess {String} users.email User's email.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+            "user_id": 3,
+            "username": "Anon5468",
+            "email": "anon5468@example.com"
+          },
+          {
+            "user_id": 2,
+            "username": "JaneSmith",
+            "email": "janesmith@example.com"
+          }
+ *     ]
+ */
+router.get('/friends/:id', friendsGet);
+/**
+ * @api {get} /pendingFriends/:id Get User's friend requests list
+ * @apiName pendingFriendsGet
+ * @apiGroup Friends
+ *
+ * @apiSuccess {Object[]} users List of users.
+ * @apiSuccess {Number} users.user_id User's unique ID.
+ * @apiSuccess {String} users.username User's username.
+ * @apiSuccess {String} users.email User's email.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+          "user_id": 2,
+          "username": "JaneSmith",
+          "email": "janesmith@example.com"
+        }
+ *     ]
+ */
+router.get('/pendingFriends/:id', pendingFriendsGet);
 
 export default router;

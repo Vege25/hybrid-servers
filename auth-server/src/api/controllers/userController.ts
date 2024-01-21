@@ -8,6 +8,8 @@ import {
   createUser,
   deleteUser,
   getAllUsers,
+  getFriendsById,
+  getPendingFriendsById,
   getUserByEmail,
   getUserById,
   getUserByUsername,
@@ -315,6 +317,59 @@ const checkUsernameExists = async (
   }
 };
 
+const friendsGet = async (
+  req: Request<{id: number}>,
+  res: Response<UserWithNoPassword[]>,
+  next: NextFunction
+) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const messages: string = errors
+      .array()
+      .map((error) => `${error.msg}: ${error.param}`)
+      .join(', ');
+    console.log('friendsGet validation', messages);
+    next(new CustomError(messages, 400));
+    return;
+  }
+  try {
+    const friends = await getFriendsById(req.params.id);
+    if (friends === null) {
+      next(new CustomError('Friends not found', 404));
+      return;
+    }
+    res.json(friends);
+  } catch (error) {
+    next(new CustomError((error as Error).message, 500));
+  }
+};
+const pendingFriendsGet = async (
+  req: Request<{id: number}>,
+  res: Response<UserWithNoPassword[]>,
+  next: NextFunction
+) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const messages: string = errors
+      .array()
+      .map((error) => `${error.msg}: ${error.param}`)
+      .join(', ');
+    console.log('pendingFriendsGet validation', messages);
+    next(new CustomError(messages, 400));
+    return;
+  }
+  try {
+    const friends = await getPendingFriendsById(req.params.id);
+    if (friends === null) {
+      next(new CustomError('Pending Friends not found', 404));
+      return;
+    }
+    res.json(friends);
+  } catch (error) {
+    next(new CustomError((error as Error).message, 500));
+  }
+};
+
 export {
   userListGet,
   userGet,
@@ -326,4 +381,6 @@ export {
   checkToken,
   checkEmailExists,
   checkUsernameExists,
+  friendsGet,
+  pendingFriendsGet,
 };

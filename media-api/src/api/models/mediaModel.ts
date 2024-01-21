@@ -53,6 +53,74 @@ const fetchAllMediaByAppId = async (
     throw new Error((e as Error).message);
   }
 };
+const fetchAllMyMediaByUserId = async (
+  id: string
+): Promise<MediaItem[] | null> => {
+  try {
+    const [rows] = await promisePool.execute<RowDataPacket[] & MediaItem[]>(
+      `SELECT * FROM MediaItems WHERE user_id = ?;`,
+      [id]
+    );
+    if (rows.length === 0) {
+      return null;
+    }
+    return rows;
+  } catch (e) {
+    console.error('fetchAllMedia error', (e as Error).message);
+    throw new Error((e as Error).message);
+  }
+};
+const fetchAllTodaysMediaByUserId = async (
+  id: string
+): Promise<MediaItem[] | null> => {
+  try {
+    const [rows] = await promisePool.execute<RowDataPacket[] & MediaItem[]>(
+      `SELECT mi.*
+      FROM MediaItems mi
+      JOIN Friends f ON (mi.user_id = f.user_id1 OR mi.user_id = f.user_id2)
+      WHERE (f.user_id1 = ? OR f.user_id2 = ?)
+        AND f.status = 'accepted'
+        AND mi.user_id != ?
+        AND DATE(mi.created_at) = CURDATE()
+      ORDER BY mi.created_at DESC;
+      `,
+      [id, id, id]
+    );
+    if (rows.length === 0) {
+      return null;
+    }
+    return rows;
+  } catch (e) {
+    console.error('fetchAllTodaysMediaByUserId error', (e as Error).message);
+    throw new Error((e as Error).message);
+  }
+};
+const fetchFriendsMediaByUserId = async (
+  user_id: number,
+  friend_id: number
+): Promise<MediaItem[] | null> => {
+  try {
+    const [rows] = await promisePool.execute<RowDataPacket[] & MediaItem[]>(
+      `SELECT mi.*
+      FROM MediaItems mi
+      JOIN Friends f ON (mi.user_id = f.user_id1 OR mi.user_id = f.user_id2)
+      WHERE (f.user_id1 = ? OR f.user_id2 = ?)
+        AND f.status = 'accepted'
+        AND mi.user_id = ?
+        AND mi.user_id != ?
+      ORDER BY mi.created_at DESC;
+      `,
+      [user_id, user_id, friend_id, user_id]
+    );
+    if (rows.length === 0) {
+      return null;
+    }
+    return rows;
+  } catch (e) {
+    console.error('fetchFriendsMediaByUserId error', (e as Error).message);
+    throw new Error((e as Error).message);
+  }
+};
 
 /**
  * Get media item by id from the database
@@ -310,4 +378,7 @@ export {
   fetchMostCommentedMedia,
   fetchHighestRatedMedia,
   putMedia,
+  fetchAllTodaysMediaByUserId,
+  fetchFriendsMediaByUserId,
+  fetchAllMyMediaByUserId,
 };

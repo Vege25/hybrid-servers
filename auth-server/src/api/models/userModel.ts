@@ -214,6 +214,72 @@ const deleteUser = async (id: number): Promise<UserDeleteResponse | null> => {
   }
 };
 
+const getFriendsById = async (
+  id: number
+): Promise<UserWithNoPassword[] | null> => {
+  try {
+    const [rows] = await promisePool.execute<
+      RowDataPacket[] & UserWithNoPassword[]
+    >(
+      `
+      SELECT
+        u.user_id,
+        u.username,
+        u.email
+      FROM
+        Users u
+      JOIN
+        Friends f ON (u.user_id = f.user_id1 OR u.user_id = f.user_id2)
+      WHERE
+        (f.user_id1 = ? OR f.user_id2 = ?)
+        AND f.status = 'accepted'
+        AND u.user_id != ?
+      ORDER BY
+        f.created_at DESC;
+      `,
+      [id, id, id]
+    );
+
+    if (rows.length === 0) {
+      return null;
+    }
+
+    return rows;
+  } catch (e) {
+    console.error('getFriendsById error', e);
+    throw new Error((e as Error).message);
+  }
+};
+const getPendingFriendsById = async (
+  id: number
+): Promise<UserWithNoPassword[] | null> => {
+  try {
+    const [rows] = await promisePool.execute<
+      RowDataPacket[] & UserWithNoPassword[]
+    >(
+      `
+      SELECT u.user_id, u.username, u.email FROM Users u
+JOIN Friends f ON (u.user_id = f.user_id1 OR u.user_id = f.user_id2)
+WHERE f.user_id2 = ?
+AND f.status = 'pending'
+AND u.user_id != ?
+ORDER BY f.created_at DESC;
+
+      `,
+      [id, id]
+    );
+
+    if (rows.length === 0) {
+      return null;
+    }
+
+    return rows;
+  } catch (e) {
+    console.error('getFriendsById error', e);
+    throw new Error((e as Error).message);
+  }
+};
+
 export {
   getUserById,
   getAllUsers,
@@ -222,4 +288,6 @@ export {
   createUser,
   modifyUser,
   deleteUser,
+  getFriendsById,
+  getPendingFriendsById,
 };

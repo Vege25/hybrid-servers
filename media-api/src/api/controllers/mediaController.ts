@@ -3,6 +3,9 @@ import {
   deleteMedia,
   fetchAllMedia,
   fetchAllMediaByAppId,
+  fetchAllMyMediaByUserId,
+  fetchAllTodaysMediaByUserId,
+  fetchFriendsMediaByUserId,
   fetchMediaById,
   postMedia,
 } from '../models/mediaModel';
@@ -35,6 +38,60 @@ const mediaListGetByAppId = async (
 ) => {
   try {
     const media = await fetchAllMediaByAppId(req.params.id);
+    if (media === null) {
+      const error = new CustomError('No media found', 404);
+      next(error);
+      return;
+    }
+    res.json(media);
+  } catch (error) {
+    next(error);
+  }
+};
+const myMediaListGetByUserId = async (
+  req: Request<{id: string}>,
+  res: Response<MediaItem[]>,
+  next: NextFunction
+) => {
+  try {
+    const media = await fetchAllMyMediaByUserId(req.params.id);
+    if (media === null) {
+      const error = new CustomError('No media found', 404);
+      next(error);
+      return;
+    }
+    res.json(media);
+  } catch (error) {
+    next(error);
+  }
+};
+const todaysMediaListGetByUserId = async (
+  req: Request<{id: string}>,
+  res: Response<MediaItem[]>,
+  next: NextFunction
+) => {
+  try {
+    const media = await fetchAllTodaysMediaByUserId(req.params.id);
+    if (media === null) {
+      const error = new CustomError('No media found', 404);
+      next(error);
+      return;
+    }
+    res.json(media);
+  } catch (error) {
+    next(error);
+  }
+};
+const friendsMediaListGetByUserId = async (
+  req: Request<{user_id: number; friend_id: number}>,
+
+  res: Response<MediaItem[]>,
+  next: NextFunction
+) => {
+  console.log('here');
+  try {
+    const {user_id, friend_id} = req.params;
+    const media = await fetchFriendsMediaByUserId(user_id, friend_id);
     if (media === null) {
       const error = new CustomError('No media found', 404);
       next(error);
@@ -106,4 +163,13 @@ const mediaDelete = async (
   }
 };
 
-export {mediaListGet, mediaListGetByAppId, mediaGet, mediaPost, mediaDelete};
+export {
+  mediaListGet,
+  mediaListGetByAppId,
+  mediaGet,
+  mediaPost,
+  mediaDelete,
+  todaysMediaListGetByUserId,
+  friendsMediaListGetByUserId,
+  myMediaListGetByUserId,
+};
