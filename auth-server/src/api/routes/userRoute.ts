@@ -3,6 +3,8 @@ import {
   checkEmailExists,
   checkToken,
   checkUsernameExists,
+  friendAcceptPut,
+  friendDelete,
   friendsGet,
   pendingFriendsGet,
   userDelete,
@@ -160,6 +162,29 @@ router.put(
  *     }
  */
 router.delete('/', authenticate, userDelete);
+
+/**
+ * @api {delete} /iends/:id Delete Friendship
+ * @apiName friendDelete
+ * @apiGroup Friends
+ * @apiPermission Bearer Token
+ *
+ * @apiHeader {String} Authorization Users unique access-token (Bearer Token).
+ *
+ * @apiSuccess {String} message Success message.
+ * @apiSuccess {Object} user User's information.
+ * @apiSuccess {Number} user_id User's id that connection was removed.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *        "message": "Friendship removed",
+          "user": {
+            "user_id": 3
+          }
+ *     }
+ */
+router.delete('/friends/:id', authenticate, friendDelete);
 
 /**
  * @api {get} /users/token Check Token / Get User Information
@@ -401,5 +426,37 @@ router.get('/friends/:id', friendsGet);
  *     ]
  */
 router.get('/pendingFriends/:id', pendingFriendsGet);
+
+/**
+ * @api {put} /acceptFriend/:id Update User's friend requests to accepted
+ * @apiName friendAcceptGet
+ * @apiGroup Friends
+ *
+ * @apiPermission Bearer Token
+ *
+ * @apiHeader {String} Authorization Users unique access-token (Bearer Token).
+ *
+ * @apiSuccess {String} message Message of the request.
+ * @apiSuccess {Object} user User object.
+ * @apiSuccess {Number} users.user_id User's unique ID.
+ * @apiSuccess {String} users.username User's username.
+ * @apiSuccess {String} users.email User's email.
+ * @apiSuccess {String} users.created_at Time when user has been created.
+ * @apiSuccess {String} users.level_name Users level
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *        "message": "Friend request accepted",
+          "user": {
+            "user_id": 3,
+            "username": "Anon5468",
+            "email": "anon5468@example.com",
+            "created_at": "2024-01-17T12:46:39.000Z",
+            "level_name": "User"
+          }
+ *     ]
+ */
+router.put('/acceptFriend/:id', authenticate, friendAcceptPut);
 
 export default router;

@@ -5,7 +5,9 @@ import CustomError from '../../classes/CustomError';
 import bcrypt from 'bcryptjs';
 import {UserDeleteResponse, UserResponse} from '@sharedTypes/MessageTypes';
 import {
+  acceptFriendRequest,
   createUser,
+  deleteFriendship,
   deleteUser,
   getAllUsers,
   getFriendsById,
@@ -158,6 +160,30 @@ const userDelete = async (
     console.log('user from token', userFromToken);
 
     const result = await deleteUser(userFromToken.user_id);
+
+    if (!result) {
+      next(new CustomError('User not found', 404));
+      return;
+    }
+
+    res.json(result);
+  } catch (error) {
+    next(new CustomError((error as Error).message, 500));
+  }
+};
+const friendDelete = async (
+  req: Request,
+  res: Response<UserDeleteResponse, {user: TokenContent}>,
+  next: NextFunction
+) => {
+  try {
+    const userFromToken = res.locals.user;
+    console.log('user from token', userFromToken);
+
+    const result = await deleteFriendship(
+      userFromToken.user_id,
+      parseInt(req.params.id)
+    );
 
     if (!result) {
       next(new CustomError('User not found', 404));
@@ -370,6 +396,53 @@ const pendingFriendsGet = async (
   }
 };
 
+const friendAcceptPut = async (
+  req: Request<{id: string}>,
+  res: Response<UserResponse, {user: TokenContent}>,
+  next: NextFunction
+) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const messages: string = errors
+      .array()
+      .map((error) => `${error.msg}: ${error.param}`)
+      .join(', ');
+    console.log('userPut validation', messages);
+    next(new CustomError(messages, 400));
+    return;
+  }
+
+  try {
+    const userFromToken = res.locals.user;
+    const user = req.body;
+    if (user.password) {
+      user.password = await bcrypt.hash(user.password, salt);
+    }
+
+    console.log('friendAcceptPut', userFromToken, user);
+
+    const result = await acceptFriendRequest(
+      parseInt(req.params.id),
+      userFromToken.user_id
+    );
+
+    if (!result) {
+      next(new CustomError('User not found', 404));
+      return;
+    }
+
+    console.log('put result', result);
+
+    const response: UserResponse = {
+      message: 'Friend request accepted',
+      user: result,
+    };
+    res.json(response);
+  } catch (error) {
+    next(new CustomError((error as Error).message, 500));
+  }
+};
+
 export {
   userListGet,
   userGet,
@@ -383,4 +456,6 @@ export {
   checkUsernameExists,
   friendsGet,
   pendingFriendsGet,
+  friendAcceptPut,
+  friendDelete,
 };

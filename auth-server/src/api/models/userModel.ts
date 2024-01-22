@@ -168,6 +168,32 @@ const modifyUser = async (
     throw new Error((e as Error).message);
   }
 };
+const acceptFriendRequest = async (
+  id: number,
+  userFromToken: number
+): Promise<UserWithNoPassword | null> => {
+  try {
+    const sql = promisePool.format(
+      `
+      UPDATE Friends SET Friends.status = "accepted" WHERE Friends.user_id1 = ? AND Friends.user_id2 = ?;
+      `,
+      [id, userFromToken]
+    );
+
+    const result = await promisePool.execute<ResultSetHeader>(sql);
+    console.log('acceptFriendRequest', result[0]);
+
+    if (result[0].affectedRows === 0) {
+      return null;
+    }
+
+    const newUser = await getUserById(id);
+    return newUser;
+  } catch (e) {
+    console.error('acceptFriendRequest error', (e as Error).message);
+    throw new Error((e as Error).message);
+  }
+};
 
 const deleteUser = async (id: number): Promise<UserDeleteResponse | null> => {
   const connection = await promisePool.getConnection();
@@ -211,6 +237,40 @@ const deleteUser = async (id: number): Promise<UserDeleteResponse | null> => {
     throw e;
   } finally {
     connection.release();
+  }
+};
+const deleteFriendship = async (
+  userFromToken: number,
+  id: number
+): Promise<UserDeleteResponse | null> => {
+  try {
+    const [result] = await promisePool.execute<
+      [RowDataPacket[], RowDataPacket[]]
+    >(
+      `
+      DELETE FROM Friends
+      WHERE
+      (user_id1 = ? AND user_id2 = ?)
+      OR
+      (user_id1 = ? AND user_id2 = ?);
+      `,
+      [userFromToken, id, id, userFromToken]
+    );
+
+    // Check if the query was successful (OkPacket) and affectedRows is greater than 0
+    if (
+      result.length > 0 &&
+      'affectedRows' in result[0] &&
+      result[0].affectedRows === 0
+    ) {
+      return null;
+    }
+
+    console.log('result', result);
+    return {message: 'Friendship removed', user: {user_id: id}};
+  } catch (e) {
+    console.error('deleteFriendship error', e);
+    throw new Error((e as Error).message);
   }
 };
 
@@ -290,4 +350,6 @@ export {
   deleteUser,
   getFriendsById,
   getPendingFriendsById,
+  acceptFriendRequest,
+  deleteFriendship,
 };
