@@ -273,6 +273,36 @@ const deleteFriendship = async (
     throw new Error((e as Error).message);
   }
 };
+const addFriendship = async (
+  userFromToken: number,
+  id: number
+): Promise<UserDeleteResponse | null> => {
+  try {
+    const [result] = await promisePool.execute<
+      [RowDataPacket[], RowDataPacket[]]
+    >(
+      `
+      INSERT INTO Friends (user_id1, user_id2) VALUES (?, ?);
+      `,
+      [userFromToken, id]
+    );
+
+    // Check if the query was successful (OkPacket) and affectedRows is greater than 0
+    if (
+      result.length > 0 &&
+      'affectedRows' in result[0] &&
+      result[0].affectedRows === 0
+    ) {
+      return null;
+    }
+
+    console.log('result', result);
+    return {message: 'Friendship added', user: {user_id: id}};
+  } catch (e) {
+    console.error('addFriendship error', e);
+    throw new Error((e as Error).message);
+  }
+};
 
 const getFriendsById = async (
   id: number
@@ -352,4 +382,5 @@ export {
   getPendingFriendsById,
   acceptFriendRequest,
   deleteFriendship,
+  addFriendship,
 };

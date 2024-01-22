@@ -5,6 +5,7 @@ import {
   checkUsernameExists,
   friendAcceptPut,
   friendDelete,
+  friendRequest,
   friendsGet,
   pendingFriendsGet,
   userDelete,
@@ -164,7 +165,7 @@ router.put(
 router.delete('/', authenticate, userDelete);
 
 /**
- * @api {delete} /iends/:id Delete Friendship
+ * @api {delete} /friends/:id Delete Friendship
  * @apiName friendDelete
  * @apiGroup Friends
  * @apiPermission Bearer Token
@@ -185,6 +186,29 @@ router.delete('/', authenticate, userDelete);
  *     }
  */
 router.delete('/friends/:id', authenticate, friendDelete);
+
+/**
+ * @api {post} /iends/:id Delete Friendship
+ * @apiName friendDelete
+ * @apiGroup Friends
+ * @apiPermission Bearer Token
+ *
+ * @apiHeader {String} Authorization Users unique access-token (Bearer Token).
+ *
+ * @apiSuccess {String} message Success message.
+ * @apiSuccess {Object} user User's information.
+ * @apiSuccess {Number} user_id User's id that connection was removed.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *        "message": "Friendship added",
+          "user": {
+            "user_id": 3
+          }
+ *     }
+ */
+router.post('/friends/:id', authenticate, friendRequest);
 
 /**
  * @api {get} /users/token Check Token / Get User Information

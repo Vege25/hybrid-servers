@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import {UserDeleteResponse, UserResponse} from '@sharedTypes/MessageTypes';
 import {
   acceptFriendRequest,
+  addFriendship,
   createUser,
   deleteFriendship,
   deleteUser,
@@ -187,6 +188,30 @@ const friendDelete = async (
 
     if (!result) {
       next(new CustomError('User not found', 404));
+      return;
+    }
+
+    res.json(result);
+  } catch (error) {
+    next(new CustomError((error as Error).message, 500));
+  }
+};
+const friendRequest = async (
+  req: Request,
+  res: Response<UserDeleteResponse, {user: TokenContent}>,
+  next: NextFunction
+) => {
+  try {
+    const userFromToken = res.locals.user;
+    console.log('user from token', userFromToken);
+
+    const result = await addFriendship(
+      userFromToken.user_id,
+      parseInt(req.params.id)
+    );
+
+    if (!result) {
+      next(new CustomError('Friend not found', 404));
       return;
     }
 
@@ -458,4 +483,5 @@ export {
   pendingFriendsGet,
   friendAcceptPut,
   friendDelete,
+  friendRequest,
 };
