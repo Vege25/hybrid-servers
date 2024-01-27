@@ -1,6 +1,8 @@
 import {User, UserWithNoPassword} from '@sharedTypes/DBTypes';
 import {fetchData} from '../../lib/functions';
 import {LoginResponse, UserResponse} from '@sharedTypes/MessageTypes';
+import {MyContext} from '../../local-types';
+import {GraphQLError} from 'graphql';
 
 export default {
   MediaItem: {
@@ -23,6 +25,21 @@ export default {
         process.env.AUTH_SERVER + '/users/' + args.user_id,
       );
       return user;
+    },
+    friends: async (
+      _parent: undefined,
+      args: {user_id: string},
+      context: MyContext,
+    ) => {
+      if (!context.user || !context.user.user_id) {
+        throw new GraphQLError('Not authorized', {
+          extensions: {code: 'NOT_AUTHORIZED'},
+        });
+      }
+      const friendsDataArray = await fetchData<UserWithNoPassword[]>(
+        process.env.AUTH_SERVER + '/friends/' + context.user.user_id,
+      );
+      return friendsDataArray;
     },
   },
   Mutation: {
