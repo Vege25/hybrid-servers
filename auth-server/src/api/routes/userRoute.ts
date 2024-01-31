@@ -237,7 +237,7 @@ router.delete('/', authenticate, userDelete);
 router.delete('/friends/:id', authenticate, friendDelete);
 
 /**
- * @api {post} /iends/:id Delete Friendship
+ * @api {post} /friends/:id Delete Friendship
  * @apiName friendDelete
  * @apiGroup Friends
  * @apiPermission Bearer Token

@@ -203,7 +203,6 @@ const friendRequest = async (
 ) => {
   try {
     const userFromToken = res.locals.user;
-    console.log('user from token', userFromToken);
 
     const result = await addFriendship(
       userFromToken.user_id,
@@ -214,7 +213,7 @@ const friendRequest = async (
       next(new CustomError('Friend not found', 404));
       return;
     }
-
+    console.log(result);
     res.json(result);
   } catch (error) {
     next(new CustomError((error as Error).message, 500));
@@ -448,15 +447,13 @@ const friendAcceptPut = async (
       user.password = await bcrypt.hash(user.password, salt);
     }
 
-    console.log('friendAcceptPut', userFromToken, user);
-
     const result = await acceptFriendRequest(
       parseInt(req.params.id),
       userFromToken.user_id
     );
 
     if (!result) {
-      next(new CustomError('User not found', 404));
+      next(new CustomError('Friend request not found', 404));
       return;
     }
 

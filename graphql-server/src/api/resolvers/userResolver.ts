@@ -2,6 +2,7 @@ import {User, UserWithNoPassword} from '@sharedTypes/DBTypes';
 import {fetchData} from '../../lib/functions';
 import {LoginResponse, UserResponse} from '@sharedTypes/MessageTypes';
 import {MyContext} from '../../local-types';
+import {GraphQLError} from 'graphql';
 export default {
   MediaItem: {
     owner: async (parent: {user_id: string}) => {
@@ -83,6 +84,79 @@ export default {
         options,
       );
       return loginResponse;
+    },
+    sendFriendRequest: async (
+      _parent: undefined,
+      args: {input: {friend_id: number}},
+      context: MyContext,
+    ) => {
+      if (!context.user || !context.user.user_id) {
+        throw new GraphQLError('Not authorized', {
+          extensions: {code: 'NOT_AUTHORIZED'},
+        });
+      }
+
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${context.user?.token}`,
+        },
+        body: JSON.stringify(args),
+      };
+      const userResponse = await fetchData<UserResponse>(
+        process.env.AUTH_SERVER + '/users/friends/' + args.input.friend_id,
+        options,
+      );
+      return userResponse;
+    },
+    acceptFriendRequest: async (
+      _parent: undefined,
+      args: {input: {friend_id: number}},
+      context: MyContext,
+    ) => {
+      if (!context.user || !context.user.user_id) {
+        throw new GraphQLError('Not authorized', {
+          extensions: {code: 'NOT_AUTHORIZED'},
+        });
+      }
+      const options = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${context.user?.token}`,
+        },
+        body: JSON.stringify(args),
+      };
+      const userResponse = await fetchData<UserResponse>(
+        process.env.AUTH_SERVER + '/users/acceptFriend/' + args.input.friend_id,
+        options,
+      );
+      return userResponse;
+    },
+    deleteFriend: async (
+      _parent: undefined,
+      args: {input: {friend_id: number}},
+      context: MyContext,
+    ) => {
+      if (!context.user || !context.user.user_id) {
+        throw new GraphQLError('Not authorized', {
+          extensions: {code: 'NOT_AUTHORIZED'},
+        });
+      }
+      const options = {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${context.user?.token}`,
+        },
+        body: JSON.stringify(args),
+      };
+      const userResponse = await fetchData<UserResponse>(
+        process.env.AUTH_SERVER + '/users/friends/' + args.input.friend_id,
+        options,
+      );
+      return userResponse;
     },
   },
 };

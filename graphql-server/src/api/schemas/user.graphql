@@ -15,6 +15,13 @@ type UserResponse {
   user: User!
   message: String!
 }
+type UserWithOnlyID {
+  user_id: ID!
+}
+type FriendshipResponse {
+  user: UserWithOnlyID!
+  message: String!
+}
 input UserInput {
   username: String! @constraint(minLength: 3, maxLength: 255)
   email: String! @constraint(format: "email")
@@ -25,7 +32,13 @@ type LoginResponse {
   token: String!
   message: String!
 }
+input friendId {
+  friend_id: ID!
+}
 type Mutation {
   createUser(input: UserInput!): UserResponse
   login(username: String!, password: String!): LoginResponse
+  sendFriendRequest(input: friendId!): FriendshipResponse
+  acceptFriendRequest(input: friendId!): UserResponse
+  deleteFriend(input: friendId!): FriendshipResponse
 }
