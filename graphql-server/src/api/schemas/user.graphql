@@ -9,6 +9,7 @@ type Query {
   users: [User]
   user(user_id: ID!): User
   friends: [User]
+  pendingFriends: [User]
 }
 type UserResponse {
   user: User!

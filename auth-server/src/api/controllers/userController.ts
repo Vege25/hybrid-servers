@@ -369,7 +369,7 @@ const checkUsernameExists = async (
 };
 
 const friendsGet = async (
-  req: Request<{id: number}>,
+  req: Request,
   res: Response<UserWithNoPassword[]>,
   next: NextFunction
 ) => {
@@ -384,7 +384,8 @@ const friendsGet = async (
     return;
   }
   try {
-    const friends = await getFriendsById(req.params.id);
+    const userFromToken = res.locals.user;
+    const friends = await getFriendsById(parseInt(userFromToken.user_id));
     if (friends === null) {
       next(new CustomError('Friends not found', 404));
       return;
@@ -395,7 +396,7 @@ const friendsGet = async (
   }
 };
 const pendingFriendsGet = async (
-  req: Request<{id: number}>,
+  req: Request,
   res: Response<UserWithNoPassword[]>,
   next: NextFunction
 ) => {
@@ -410,7 +411,10 @@ const pendingFriendsGet = async (
     return;
   }
   try {
-    const friends = await getPendingFriendsById(req.params.id);
+    const userFromToken = res.locals.user;
+    const friends = await getPendingFriendsById(
+      parseInt(userFromToken.user_id)
+    );
     if (friends === null) {
       next(new CustomError('Pending Friends not found', 404));
       return;

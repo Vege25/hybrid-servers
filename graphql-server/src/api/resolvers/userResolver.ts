@@ -2,8 +2,6 @@ import {User, UserWithNoPassword} from '@sharedTypes/DBTypes';
 import {fetchData} from '../../lib/functions';
 import {LoginResponse, UserResponse} from '@sharedTypes/MessageTypes';
 import {MyContext} from '../../local-types';
-import {GraphQLError} from 'graphql';
-
 export default {
   MediaItem: {
     owner: async (parent: {user_id: string}) => {
@@ -26,18 +24,31 @@ export default {
       );
       return user;
     },
-    friends: async (
+    friends: async (_parent: undefined, args: {}, context: MyContext) => {
+      const options: RequestInit = {
+        headers: {
+          Authorization: `Bearer ${context.user?.token}`,
+        },
+      };
+      const friendsDataArray = await fetchData<UserWithNoPassword[]>(
+        process.env.AUTH_SERVER + '/users/friends',
+        options,
+      );
+      return friendsDataArray;
+    },
+    pendingFriends: async (
       _parent: undefined,
-      args: {user_id: string},
+      args: {},
       context: MyContext,
     ) => {
-      if (!context.user || !context.user.user_id) {
-        throw new GraphQLError('Not authorized', {
-          extensions: {code: 'NOT_AUTHORIZED'},
-        });
-      }
+      const options: RequestInit = {
+        headers: {
+          Authorization: `Bearer ${context.user?.token}`,
+        },
+      };
       const friendsDataArray = await fetchData<UserWithNoPassword[]>(
-        process.env.AUTH_SERVER + '/friends/' + context.user.user_id,
+        process.env.AUTH_SERVER + '/users/pendingFriends',
+        options,
       );
       return friendsDataArray;
     },

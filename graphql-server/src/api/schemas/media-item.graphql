@@ -12,12 +12,6 @@ type MediaItem {
   owner: User
 }
 
-type Query {
-  mediaItems: [MediaItem]
-  mediaItem(media_id: ID!): MediaItem
-  mediaItemsByTag(tag: String!): [MediaItem]
-}
-
 type MediaResponse {
   message: String!
   media: MediaItem!
@@ -40,6 +34,16 @@ input AddTagToMediaItemInput {
   media_id: ID!
   tag_name: String!
 }
+
+type Query {
+  mediaItems: [MediaItem]
+  mediaItem(media_id: ID!): MediaItem
+  mediaItemsByTag(tag: String!): [MediaItem]
+  todaysMediaItems: [MediaItem]
+  myMedias: [MediaItem]
+  oneFriendsMediaItems(friend_id: ID!): [MediaItem]
+}
+
 type Mutation {
   createMediaItem(input: MediaItemInput!): MediaItem
   addTagToMediaItem(input: AddTagToMediaItemInput!): MediaItem

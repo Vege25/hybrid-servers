@@ -1,6 +1,9 @@
 import {MediaItem} from '@sharedTypes/DBTypes';
 import {
   fetchAllMedia,
+  fetchAllMyMediaByUserId,
+  fetchAllTodaysMediaByUserId,
+  fetchFriendsMediaByUserId,
   fetchMediaById,
   fetchMediaByTag,
   postMedia,
@@ -23,6 +26,42 @@ export default {
     mediaItemsByTag: async (_parent: undefined, args: {tag: string}) => {
       console.log(args);
       return await fetchMediaByTag(args.tag);
+    },
+    todaysMediaItems: async (
+      _parent: undefined,
+      args: {},
+      context: MyContext,
+    ) => {
+      if (!context.user || !context.user.user_id) {
+        throw new GraphQLError('Not authorized', {
+          extensions: {code: 'NOT_AUTHORIZED'},
+        });
+      }
+      const id = Number(context.user.user_id);
+      return await fetchAllTodaysMediaByUserId(id);
+    },
+    myMedias: async (_parent: undefined, args: {}, context: MyContext) => {
+      if (!context.user || !context.user.user_id) {
+        throw new GraphQLError('Not authorized', {
+          extensions: {code: 'NOT_AUTHORIZED'},
+        });
+      }
+      const id = Number(context.user.user_id);
+      return await fetchAllMyMediaByUserId(id);
+    },
+    oneFriendsMediaItems: async (
+      _parent: undefined,
+      args: {friend_id: string},
+      context: MyContext,
+    ) => {
+      if (!context.user || !context.user.user_id) {
+        throw new GraphQLError('Not authorized', {
+          extensions: {code: 'NOT_AUTHORIZED'},
+        });
+      }
+      const login_user_id = Number(context.user.user_id);
+      const friend_id = Number(args.friend_id);
+      return await fetchFriendsMediaByUserId(login_user_id, friend_id);
     },
   },
   Mutation: {
