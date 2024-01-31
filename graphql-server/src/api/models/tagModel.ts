@@ -20,10 +20,16 @@ const fetchAllTags = async (): Promise<Tag[] | null> => {
 };
 
 // Post a new tag
-const postTag = async (
-  tag: Omit<Tag, 'tag_id'>,
-): Promise<MessageResponse | null> => {
+const postTag = async (tag: Omit<Tag, 'tag_id'>): Promise<Tag | null> => {
   try {
+    // check if tag exists (case insensitive)
+    const sql = promisePool.format('SELECT * FROM Tags WHERE tag_name = ?', [
+      tag.tag_name,
+    ]);
+    const [result] = await promisePool.execute<RowDataPacket[]>(sql);
+    if (result.length > 0) {
+      return null;
+    }
     const [tagResult] = await promisePool.execute<ResultSetHeader>(
       'INSERT INTO Tags (tag_name) VALUES (?)',
       [tag.tag_name],
@@ -31,8 +37,16 @@ const postTag = async (
     if (tagResult.affectedRows === 0) {
       return null;
     }
-
-    return {message: 'Tag created'};
+    const sql2 = promisePool.format('SELECT * FROM Tags WHERE tag_id = ?', [
+      tagResult.insertId,
+    ]);
+    const [selectResult] = await promisePool.execute<RowDataPacket[] & Tag[]>(
+      sql2,
+    );
+    if (selectResult.length > 0) {
+      return selectResult[0];
+    }
+    return null;
   } catch (e) {
     console.error('postTag error', (e as Error).message);
     throw new Error((e as Error).message);

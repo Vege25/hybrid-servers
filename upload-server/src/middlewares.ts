@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 import {TokenContent} from '@sharedTypes/DBTypes';
 import path from 'path';
 import getVideoThumbnail from './utils/getVideoThumbnail';
-import sharp from 'sharp';
+import jimp from 'jimp';
 
 const notFound = (req: Request, res: Response, next: NextFunction) => {
   const error = new CustomError(`🔍 - Not Found - ${req.originalUrl}`, 404);
@@ -74,10 +74,9 @@ const makeThumbnail = async (
     console.log(src);
 
     if (!req.file.mimetype.includes('video')) {
-      await sharp(src)
-        .resize(320, 240)
-        .png()
-        .toFile(src + '-thumb.png');
+      const image = await jimp.read(src);
+      image.resize(320, jimp.AUTO);
+      await image.writeAsync(src + '-thumb.png');
       next();
       return;
     }

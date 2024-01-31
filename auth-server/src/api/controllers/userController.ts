@@ -203,7 +203,6 @@ const friendRequest = async (
 ) => {
   try {
     const userFromToken = res.locals.user;
-    console.log('user from token', userFromToken);
 
     const result = await addFriendship(
       userFromToken.user_id,
@@ -214,7 +213,7 @@ const friendRequest = async (
       next(new CustomError('Friend not found', 404));
       return;
     }
-
+    console.log(result);
     res.json(result);
   } catch (error) {
     next(new CustomError((error as Error).message, 500));
@@ -369,7 +368,7 @@ const checkUsernameExists = async (
 };
 
 const friendsGet = async (
-  req: Request<{id: number}>,
+  req: Request,
   res: Response<UserWithNoPassword[]>,
   next: NextFunction
 ) => {
@@ -384,7 +383,8 @@ const friendsGet = async (
     return;
   }
   try {
-    const friends = await getFriendsById(req.params.id);
+    const userFromToken = res.locals.user;
+    const friends = await getFriendsById(parseInt(userFromToken.user_id));
     if (friends === null) {
       next(new CustomError('Friends not found', 404));
       return;
@@ -395,7 +395,7 @@ const friendsGet = async (
   }
 };
 const pendingFriendsGet = async (
-  req: Request<{id: number}>,
+  req: Request,
   res: Response<UserWithNoPassword[]>,
   next: NextFunction
 ) => {
@@ -410,7 +410,10 @@ const pendingFriendsGet = async (
     return;
   }
   try {
-    const friends = await getPendingFriendsById(req.params.id);
+    const userFromToken = res.locals.user;
+    const friends = await getPendingFriendsById(
+      parseInt(userFromToken.user_id)
+    );
     if (friends === null) {
       next(new CustomError('Pending Friends not found', 404));
       return;
@@ -444,15 +447,13 @@ const friendAcceptPut = async (
       user.password = await bcrypt.hash(user.password, salt);
     }
 
-    console.log('friendAcceptPut', userFromToken, user);
-
     const result = await acceptFriendRequest(
       parseInt(req.params.id),
       userFromToken.user_id
     );
 
     if (!result) {
-      next(new CustomError('User not found', 404));
+      next(new CustomError('Friend request not found', 404));
       return;
     }
 
