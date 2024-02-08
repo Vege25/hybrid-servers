@@ -5,16 +5,16 @@ type User {
   level_name: String!
   created_at: String!
 }
-type Query {
-  users: [User]
-  user(user_id: ID!): User
-  userWithToken: User
-  friends: [User]
-  pendingFriends: [User]
-}
 type UserResponse {
   user: User!
   message: String!
+}
+type Query {
+  users: [User]
+  user(user_id: ID!): User
+  userWithToken: UserResponse
+  friends: [User]
+  pendingFriends: [User]
 }
 type UserWithOnlyID {
   user_id: ID!

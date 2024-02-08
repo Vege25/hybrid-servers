@@ -31,7 +31,7 @@ export default {
           Authorization: `Bearer ${context.user?.token}`,
         },
       };
-      const user = await fetchData<UserWithNoPassword>(
+      const user = await fetchData<Pick<LoginResponse, 'message' | 'user'>>(
         process.env.AUTH_SERVER + '/users/token',
         options,
       );
