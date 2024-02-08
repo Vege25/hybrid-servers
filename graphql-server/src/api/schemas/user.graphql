@@ -8,6 +8,7 @@ type User {
 type Query {
   users: [User]
   user(user_id: ID!): User
+  userWithToken: User
   friends: [User]
   pendingFriends: [User]
 }

@@ -11,7 +11,17 @@ const promisePool = mysql.createPool({
   // Convert JSON fields to objects
   typeCast: function (field, next) {
     if (field.type === 'JSON') {
-      return JSON.parse(field.string());
+      try {
+        const jsonString = field.string();
+        // Check if jsonString is not null or undefined before parsing
+        return jsonString !== null && jsonString !== undefined
+          ? JSON.parse(jsonString)
+          : null;
+      } catch (error) {
+        // Handle JSON parsing error if needed
+        console.error('Error parsing JSON field:', error);
+        return null;
+      }
     }
     return next();
   },

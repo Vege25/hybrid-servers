@@ -25,6 +25,18 @@ export default {
       );
       return user;
     },
+    userWithToken: async (_parent: undefined, args: {}, context: MyContext) => {
+      const options: RequestInit = {
+        headers: {
+          Authorization: `Bearer ${context.user?.token}`,
+        },
+      };
+      const user = await fetchData<UserWithNoPassword>(
+        process.env.AUTH_SERVER + '/users/token',
+        options,
+      );
+      return user;
+    },
     friends: async (_parent: undefined, args: {}, context: MyContext) => {
       const options: RequestInit = {
         headers: {
