@@ -8,4 +8,8 @@ type MyContext = {
   user?: UserFromToken;
 };
 
-export type {MyContext, UserFromToken};
+type FileInput = {
+  file: File;
+};
+
+export type {MyContext, FileInput, UserFromToken};

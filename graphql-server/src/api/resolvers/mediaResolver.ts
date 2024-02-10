@@ -10,8 +10,10 @@ import {
   postTagToMedia,
   putMedia,
 } from '../models/mediaModel';
-import {MyContext} from '../../local-types';
+import {FileInput, MyContext} from '../../local-types';
 import {GraphQLError} from 'graphql';
+import {fetchData} from '../../lib/functions';
+import {UploadResponse} from '@sharedTypes/MessageTypes';
 
 export default {
   Query: {
@@ -104,6 +106,31 @@ export default {
       },
     ) => {
       return await putMedia(args.input, Number(args.media_id));
+    },
+    addFile: async (
+      _parent: undefined,
+      args: {
+        input: FileInput;
+      },
+      context: MyContext,
+    ) => {
+      const formData = new FormData();
+      formData.append('file', args.input.file);
+
+      const options: RequestInit = {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${context.user?.token}`,
+        },
+        body: formData,
+      };
+
+      const uploadResponse = await fetchData<UploadResponse>(
+        process.env.UPLOAD_SERVER + '/upload',
+        options,
+      );
+
+      return uploadResponse;
     },
   },
 };
