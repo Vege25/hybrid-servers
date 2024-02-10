@@ -8,6 +8,7 @@ type MyContext = {
   user?: UserFromToken;
 };
 
+// type for file
 type FileInput = {
   file: File;
 };
