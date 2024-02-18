@@ -1,8 +1,9 @@
 import {ResultSetHeader, RowDataPacket} from 'mysql2';
-import {MediaItem, TokenContent} from '@sharedTypes/DBTypes';
+import {MediaItem, TokenContent} from '../../hybrid-types/DBTypes';
 import promisePool from '../../lib/db';
 import {fetchData} from '../../lib/functions';
-import {MediaResponse, MessageResponse} from '@sharedTypes/MessageTypes';
+import {MediaResponse, MessageResponse} from '../../hybrid-types/MessageTypes';
+import {Like} from '@sharedTypes/DBTypes';
 
 /**
  * Get all media items from the database
@@ -423,6 +424,86 @@ const fetchFriendsMediaByUserId = async (
     throw new Error((e as Error).message);
   }
 };
+const postLike = async (media_id: number, user_id: number) => {
+  try {
+    console.log('postLike', media_id, user_id);
+    // Check if a like already exists for the given media_id and user_id
+    const [existingLike] = await promisePool.execute(
+      'SELECT like_id FROM Likes WHERE media_id = ? AND user_id = ?;',
+      [media_id, user_id],
+    );
+
+    if ((existingLike as any[]).length > 0) {
+      return {message: 'Like already exists'};
+    }
+
+    const [result] = await promisePool.execute<ResultSetHeader>(
+      'INSERT INTO Likes (media_id, user_id) VALUES (?, ?)',
+      [media_id, user_id],
+    );
+    if (result.affectedRows === 0) {
+      return null;
+    }
+    return {message: 'Like added'};
+  } catch (e) {
+    console.error('postLike error', (e as Error).message);
+    throw new Error((e as Error).message);
+  }
+};
+
+const getUserLike = async (
+  media_id: number,
+  user_id: number,
+): Promise<Like | null> => {
+  try {
+    const [rows] = await promisePool.execute<RowDataPacket[] & Like>(
+      'SELECT * FROM Likes WHERE media_id = ? AND user_id = ?;',
+      [media_id, user_id],
+    );
+    if (rows.length === 0) {
+      return null;
+    }
+    const like: Like = rows[0] as Like;
+    return like;
+  } catch (e) {
+    console.error('getUserLike error', (e as Error).message);
+    throw new Error((e as Error).message);
+  }
+};
+
+const getCountByMediaId = async (
+  media_id: number,
+): Promise<{count: number}> => {
+  try {
+    const [rows] = await promisePool.execute<RowDataPacket[]>(
+      'SELECT COUNT(*) as count FROM Likes WHERE media_id = ?;',
+      [media_id],
+    );
+    if (rows.length === 0) {
+      return {count: 0};
+    }
+    return rows[0] as {count: number};
+  } catch (e) {
+    console.error('getCountByMediaId error', (e as Error).message);
+    throw new Error((e as Error).message);
+  }
+};
+
+const deleteLike = async (media_id: number, user_id: number) => {
+  try {
+    const [result] = await promisePool.execute<ResultSetHeader>(
+      'DELETE FROM Likes WHERE media_id = ? AND user_id = ?;',
+      [media_id, user_id],
+    );
+    if (result.affectedRows === 0) {
+      return null;
+    }
+    return {message: 'Like deleted'};
+  } catch (e) {
+    console.error('deleteLike error', (e as Error).message);
+    throw new Error((e as Error).message);
+  }
+};
 
 export {
   fetchAllMedia,
@@ -438,4 +519,8 @@ export {
   fetchAllTodaysMediaByUserId,
   fetchFriendsMediaByUserId,
   fetchAllMyMediaByUserId,
+  postLike,
+  getUserLike,
+  getCountByMediaId,
+  deleteLike,
 };

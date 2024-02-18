@@ -1,6 +1,6 @@
-import {User, UserWithNoPassword} from '@sharedTypes/DBTypes';
+import {User, UserWithNoPassword} from '../../hybrid-types/DBTypes';
 import {fetchData} from '../../lib/functions';
-import {LoginResponse, UserResponse} from '@sharedTypes/MessageTypes';
+import {LoginResponse, UserResponse} from '../../hybrid-types/MessageTypes';
 import {MyContext} from '../../local-types';
 import {GraphQLError} from 'graphql';
 export default {
@@ -64,6 +64,21 @@ export default {
         options,
       );
       return friendsDataArray;
+    },
+    getUsernameAviable: async (
+      _parent: undefined,
+      args: {username: string},
+    ) => {
+      const usernameIsAviable = await fetchData<Boolean>(
+        process.env.AUTH_SERVER + `/users/username/${args.username}`,
+      );
+      return usernameIsAviable;
+    },
+    getEmailAviable: async (_parent: undefined, args: {email: string}) => {
+      const usernameIsAviable = await fetchData<Boolean>(
+        process.env.AUTH_SERVER + `/users/username/${args.email}`,
+      );
+      return usernameIsAviable;
     },
   },
   Mutation: {

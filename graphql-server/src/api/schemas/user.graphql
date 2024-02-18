@@ -9,12 +9,17 @@ type UserResponse {
   user: User!
   message: String!
 }
+type ValidateResponse {
+  available: Boolean!
+}
 type Query {
   users: [User]
   user(user_id: ID!): User
   userWithToken: UserResponse
   friends: [User]
   pendingFriends: [User]
+  getUsernameAviable(username: String): ValidateResponse
+  getEmailAviable(email: String): ValidateResponse
 }
 type UserWithOnlyID {
   user_id: ID!

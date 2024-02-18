@@ -1,4 +1,4 @@
-import {ErrorResponse} from '@sharedTypes/MessageTypes';
+import {ErrorResponse} from '../hybrid-types/MessageTypes';
 import jwt from 'jsonwebtoken';
 import {MyContext, UserFromToken} from '../local-types';
 import {Request} from 'express';

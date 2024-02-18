@@ -1,19 +1,21 @@
-import {MediaItem} from '@sharedTypes/DBTypes';
+import {MediaItem} from '../../hybrid-types/DBTypes';
 import {
+  deleteLike,
   fetchAllMedia,
   fetchAllMyMediaByUserId,
   fetchAllTodaysMediaByUserId,
   fetchFriendsMediaByUserId,
   fetchMediaById,
   fetchMediaByTag,
+  getCountByMediaId,
+  getUserLike,
+  postLike,
   postMedia,
   postTagToMedia,
   putMedia,
 } from '../models/mediaModel';
-import {FileInput, MyContext} from '../../local-types';
+import {MyContext} from '../../local-types';
 import {GraphQLError} from 'graphql';
-import {fetchData} from '../../lib/functions';
-import {UploadResponse} from '@sharedTypes/MessageTypes';
 
 export default {
   Query: {
@@ -65,6 +67,21 @@ export default {
       const friend_id = Number(args.friend_id);
       return await fetchFriendsMediaByUserId(login_user_id, friend_id);
     },
+    getUserLike: async (
+      _parent: undefined,
+      args: {media_id: string},
+      context: MyContext,
+    ) => {
+      if (!context.user || !context.user.user_id) {
+        throw new GraphQLError('Not authorized', {
+          extensions: {code: 'NOT_AUTHORIZED'},
+        });
+      }
+      return await getUserLike(Number(args.media_id), context.user.user_id);
+    },
+    getCountByMediaId: async (_parent: undefined, args: {media_id: string}) => {
+      return await getCountByMediaId(Number(args.media_id));
+    },
   },
   Mutation: {
     createMediaItem: async (
@@ -107,30 +124,44 @@ export default {
     ) => {
       return await putMedia(args.input, Number(args.media_id));
     },
-    addFile: async (
+    postLike: async (
       _parent: undefined,
-      args: {
-        input: FileInput;
-      },
+      args: {input: {media_id: string}},
       context: MyContext,
     ) => {
-      const formData = new FormData();
-      formData.append('file', args.input.file);
+      if (!context.user || !context.user.user_id) {
+        throw new GraphQLError('Not authorized', {
+          extensions: {code: 'NOT_AUTHORIZED'},
+        });
+      }
+      return await postLike(Number(args.input.media_id), context.user.user_id);
+    },
+    deleteLike: async (
+      _parent: undefined,
+      args: {media_id: string},
+      context: MyContext,
+    ) => {
+      if (!context.user || !context.user.user_id) {
+        throw new GraphQLError('Not authorized', {
+          extensions: {code: 'NOT_AUTHORIZED'},
+        });
+      }
+      try {
+        const result = await deleteLike(
+          Number(args.media_id),
+          context.user.user_id,
+        );
 
-      const options: RequestInit = {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${context.user?.token}`,
-        },
-        body: formData,
-      };
-
-      const uploadResponse = await fetchData<UploadResponse>(
-        process.env.UPLOAD_SERVER + '/upload',
-        options,
-      );
-
-      return uploadResponse;
+        // Check the result and handle accordingly
+        if (result) {
+          return {message: 'Like deleted successfully'};
+        } else {
+          return {message: 'Failed to delete like'};
+        }
+      } catch (error) {
+        console.error('Error deleting like:', error);
+        throw new GraphQLError('Failed to delete like');
+      }
     },
   },
 };

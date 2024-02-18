@@ -1,4 +1,4 @@
-import {Tag} from '@sharedTypes/DBTypes';
+import {Tag} from '../../hybrid-types/DBTypes';
 import {
   deleteTag,
   fetchAllTags,

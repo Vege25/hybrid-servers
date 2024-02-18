@@ -3,7 +3,7 @@ import express, {Request, Response} from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import {notFound, errorHandler} from './middlewares';
-import {MessageResponse} from '@sharedTypes/MessageTypes';
+import {MessageResponse} from './hybrid-types/MessageTypes';
 import {ApolloServer} from '@apollo/server';
 import {expressMiddleware} from '@apollo/server/express4';
 import typeDefs from './api/schemas/index';
