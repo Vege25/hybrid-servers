@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+  graphql-server:
+    build: ./graphql-server
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DB_HOST: db
+      DB_USER: veetiso
+      DB_PASS: qwe123
+      DB_NAME: veetiso
+      JWT_SECRET: sij12ias4uc4uhjs3hfd80lsod012spqsx28sdj2
+      UPLOAD_SERVER: http://localhost:3002/api/v1
+      UPLOAD_URL: http://localhost:3002/uploads/
+      AUTH_SERVER: http://localhost:3001/api/v1
+  auth-server:
+    build: ./auth-server
+    ports:
+      - '3001:3001'
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DB_HOST: db
+      DB_USER: veetiso
+      DB_PASS: qwe123
+      DB_NAME: veetiso
+      JWT_SECRET: sij12ias4uc4uhjs3hfd80lsod012spqsx28sdj2
+
+  upload-server:
+    build: ./upload-server
+    ports:
+      - '3002:3002'
+    environment:
+      NODE_ENV: development
+      PORT: 3002
+      JWT_SECRET: sij12ias4uc4uhjs3hfd80lsod012spqsx28sdj2
+      AUTH_URL: http://localhost:3001/api/v1
+
+  db:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+    ports:
+      - '3306:3306'
+    volumes:
+      - MediaSharingApp:/data/db
+
+volumes:
+  MediaSharingApp:

@@ -1,7 +1,11 @@
 import {ResultSetHeader, RowDataPacket} from 'mysql2';
 import {promisePool} from '../../lib/db';
-import {UserWithLevel, User, UserWithNoPassword} from '@sharedTypes/DBTypes';
-import {UserDeleteResponse} from '@sharedTypes/MessageTypes';
+import {
+  UserWithLevel,
+  User,
+  UserWithNoPassword,
+} from '../../../hybrid-types/DBTypes';
+import {UserDeleteResponse} from '../../../hybrid-types/MessageTypes';
 
 const getUserById = async (id: number): Promise<UserWithNoPassword | null> => {
   try {

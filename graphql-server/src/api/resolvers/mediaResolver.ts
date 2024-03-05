@@ -126,7 +126,7 @@ export default {
     },
     postLike: async (
       _parent: undefined,
-      args: {input: {media_id: string}},
+      args: {media_id: string},
       context: MyContext,
     ) => {
       if (!context.user || !context.user.user_id) {
@@ -134,7 +134,7 @@ export default {
           extensions: {code: 'NOT_AUTHORIZED'},
         });
       }
-      return await postLike(Number(args.input.media_id), context.user.user_id);
+      return await postLike(Number(args.media_id), context.user.user_id);
     },
     deleteLike: async (
       _parent: undefined,

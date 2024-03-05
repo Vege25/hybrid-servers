@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {NextFunction, Request, Response} from 'express';
-import {ErrorResponse} from '@sharedTypes/MessageTypes';
+import {ErrorResponse} from '../hybrid-types/MessageTypes';
 import CustomError from './classes/CustomError';
 import jwt from 'jsonwebtoken';
-import {TokenContent} from '@sharedTypes/DBTypes';
+import {TokenContent} from '../hybrid-types/DBTypes';
 import path from 'path';
 import getVideoThumbnail from './utils/getVideoThumbnail';
 import jimp from 'jimp';
@@ -17,7 +17,7 @@ const errorHandler = (
   err: CustomError,
   req: Request,
   res: Response<ErrorResponse>,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   console.error('errorHandler', err);
   res.status(err.status || 500);
@@ -30,7 +30,7 @@ const errorHandler = (
 const authenticate = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   console.log('authenticate');
   try {
@@ -43,7 +43,7 @@ const authenticate = async (
     const token = authHeader.split(' ')[1];
     const decodedToken = jwt.verify(
       token,
-      process.env.JWT_SECRET as string
+      process.env.JWT_SECRET as string,
     ) as TokenContent;
 
     console.log(decodedToken);
@@ -62,7 +62,7 @@ const authenticate = async (
 const makeThumbnail = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     if (!req.file) {

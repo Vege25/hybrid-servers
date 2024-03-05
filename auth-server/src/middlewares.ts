@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {NextFunction, Request, Response} from 'express';
-import {ErrorResponse} from '@sharedTypes/MessageTypes';
+import {ErrorResponse} from '../hybrid-types/MessageTypes';
 import CustomError from './classes/CustomError';
 import jwt from 'jsonwebtoken';
 import {getUserById} from './api/models/userModel';
-import {TokenContent} from '@sharedTypes/DBTypes';
+import {TokenContent} from '../hybrid-types/DBTypes';
 
 const notFound = (req: Request, res: Response, next: NextFunction) => {
   const error = new CustomError(`🔍 - Not Found - ${req.originalUrl}`, 404);

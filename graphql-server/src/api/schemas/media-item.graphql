@@ -65,6 +65,6 @@ type Mutation {
   createMediaItem(input: MediaItemInput!): MediaItem
   addTagToMediaItem(input: AddTagToMediaItemInput!): MediaItem
   updateMediaItem(input: MediaItemUpdateInput!, media_id: ID!): MediaResponse
-  postLike(input: LikeInput!): MessageResponse
+  postLike(media_id: ID!): MessageResponse
   deleteLike(media_id: ID!): MessageResponse
 }
