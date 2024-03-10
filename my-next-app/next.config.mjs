@@ -1,4 +1,7 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
+// next.config.js
 
-export default nextConfig;
+module.exports = {
+  images: {
+    domains: ['localhost'], // Use 'domains' instead of 'remotePatterns'
+  },
+};
