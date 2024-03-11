@@ -49,6 +49,17 @@ input LikeInput {
 type Count {
   count: Int
 }
+input CommentInput {
+  media_id: ID!
+  comment_text: String!
+}
+type Comment {
+  comment_id: ID
+  media_id: ID
+  user_id: ID
+  comment_text: String
+  created_at: String
+}
 
 type Query {
   mediaItems: [MediaItem]
@@ -59,6 +70,7 @@ type Query {
   oneFriendsMediaItems(friend_id: ID!): [MediaItem]
   getUserLike(media_id: ID!): Like
   getCountByMediaId(media_id: ID!): Count
+  getCommentsByMediaId(media_id: ID!): [Comment]
 }
 
 type Mutation {
@@ -67,4 +79,5 @@ type Mutation {
   updateMediaItem(input: MediaItemUpdateInput!, media_id: ID!): MediaResponse
   postLike(media_id: ID!): MessageResponse
   deleteLike(media_id: ID!): MessageResponse
+  postComment(input: CommentInput!): MessageResponse
 }

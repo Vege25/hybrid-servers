@@ -16,6 +16,7 @@ import {
 } from '../models/mediaModel';
 import {MyContext} from '../../local-types';
 import {GraphQLError} from 'graphql';
+import {fetchCommentsByMediaId, postComment} from '../models/commentModel';
 
 export default {
   Query: {
@@ -81,6 +82,12 @@ export default {
     },
     getCountByMediaId: async (_parent: undefined, args: {media_id: string}) => {
       return await getCountByMediaId(Number(args.media_id));
+    },
+    getCommentsByMediaId: async (
+      _parent: undefined,
+      args: {media_id: string},
+    ) => {
+      return await fetchCommentsByMediaId(Number(args.media_id));
     },
   },
   Mutation: {
@@ -161,6 +168,36 @@ export default {
       } catch (error) {
         console.error('Error deleting like:', error);
         throw new GraphQLError('Failed to delete like');
+      }
+    },
+    postComment: async (
+      _parent: undefined,
+      args: {input: {media_id: string; comment_text: string}},
+      context: MyContext,
+    ) => {
+      if (!context.user || !context.user.user_id) {
+        throw new GraphQLError('Not authorized', {
+          extensions: {code: 'NOT_AUTHORIZED'},
+        });
+      }
+      try {
+        console.log(
+          'here',
+          args.input.media_id,
+          context.user.user_id,
+          args.input.comment_text,
+        );
+        const result = await postComment(
+          Number(args.input.media_id),
+          context.user.user_id,
+          args.input.comment_text,
+        );
+        if (result) {
+          return {message: 'Comment posted successfully'};
+        }
+      } catch (error) {
+        console.error('Error posting comment:', error);
+        throw new GraphQLError('Failed to posting comment');
       }
     },
   },
