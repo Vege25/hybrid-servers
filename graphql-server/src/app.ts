@@ -30,11 +30,19 @@ const app = express();
         contentSecurityPolicy: false,
       }),
     );
-    // app.use(cors());
+
+    // Enable CORS middleware
+    app.use(
+      cors({
+        origin:
+          'https://users.metropolia.fi/~veetiso/vuosi3/hybrid/hybrid-yksilotehtava',
+      }),
+    );
 
     app.get('/', (_req: Request, res: Response<MessageResponse>) => {
       res.send({message: 'Server is running'});
     });
+
     const schema = makeExecutableSchema({
       typeDefs: [constraintDirectiveTypeDefs, typeDefs],
       resolvers,
@@ -54,7 +62,6 @@ const app = express();
 
     app.use(
       '/graphql',
-      cors(),
       express.json(),
       expressMiddleware(server, {
         context: ({req}) => authenticate(req),
