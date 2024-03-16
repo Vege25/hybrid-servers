@@ -57,7 +57,10 @@ const app = express();
 
     app.use(
       '/graphql',
-      cors(),
+      cors({
+        origin:
+          'https://users.metropolia.fi/~veetiso/vuosi3/hybrid/hybrid-yksilotehtava',
+      }),
       express.json(),
       expressMiddleware(server, {
         context: ({req}) => authenticate(req),
