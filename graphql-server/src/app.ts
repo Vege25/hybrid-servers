@@ -32,12 +32,7 @@ const app = express();
     );
 
     // Enable CORS middleware
-    app.use(
-      cors({
-        origin:
-          'https://users.metropolia.fi/~veetiso/vuosi3/hybrid/hybrid-yksilotehtava',
-      }),
-    );
+    // app.use(cors());
 
     app.get('/', (_req: Request, res: Response<MessageResponse>) => {
       res.send({message: 'Server is running'});
@@ -62,6 +57,7 @@ const app = express();
 
     app.use(
       '/graphql',
+      cors(),
       express.json(),
       expressMiddleware(server, {
         context: ({req}) => authenticate(req),
