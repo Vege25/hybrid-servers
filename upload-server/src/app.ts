@@ -12,11 +12,11 @@ import {MessageResponse} from '../hybrid-types/MessageTypes';
 const app = express();
 
 app.use(morgan('dev'));
-app.use(
-  helmet({
-    crossOriginResourcePolicy: false,
-  }),
-);
+// app.use(
+//   helmet({
+//     crossOriginResourcePolicy: false,
+//   }),
+// );
 app.use(cors());
 app.use(express.json());
 
