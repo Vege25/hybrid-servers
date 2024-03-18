@@ -425,6 +425,7 @@ const pendingFriendsGet = async (
       next(new CustomError('Pending Friends not found', 404));
       return;
     }
+    console.log(friends);
     res.json(friends);
   } catch (error) {
     next(new CustomError((error as Error).message, 500));
