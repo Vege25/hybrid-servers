@@ -63,6 +63,7 @@ export default {
         process.env.AUTH_SERVER + '/users/pendingFriends',
         options,
       );
+      console.log('friendsDataArray', friendsDataArray);
       return friendsDataArray;
     },
     getUsernameAviable: async (
