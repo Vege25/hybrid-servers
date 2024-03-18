@@ -11,17 +11,17 @@ import {MessageResponse} from '../hybrid-types/MessageTypes';
 
 const app = express();
 
-// Middleware
 app.use(morgan('dev'));
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  }),
+);
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from the 'uploads' directory
-const uploadsPath = path.join(__dirname, 'uploads');
-app.use('/uploads', express.static(uploadsPath));
+app.use('/uploads', express.static('uploads'));
 
-// Routes
 app.get<{}, MessageResponse>('/', (req, res) => {
   res.json({
     message: 'API location: api/v1',
@@ -30,7 +30,6 @@ app.get<{}, MessageResponse>('/', (req, res) => {
 
 app.use('/api/v1', api);
 
-// Error handling middleware
 app.use(notFound);
 app.use(errorHandler);
 

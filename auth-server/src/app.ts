@@ -18,7 +18,10 @@ app.use(
     },
   })
 );
+
+// Enable CORS middleware
 app.use(cors());
+
 app.use(express.json());
 
 // serve public folder for apidoc
