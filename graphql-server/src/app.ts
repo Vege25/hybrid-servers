@@ -1,5 +1,4 @@
 require('dotenv').config();
-import graphqlPlayground from 'graphql-playground-middleware-express';
 import express, {Request, Response} from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -64,9 +63,6 @@ const app = express();
         context: ({req}) => authenticate(req),
       }),
     );
-
-    // Add GraphQL Playground endpoint
-    app.get('/playground', graphqlPlayground({endpoint: '/graphql'}));
 
     app.use(notFound);
     app.use(errorHandler);
