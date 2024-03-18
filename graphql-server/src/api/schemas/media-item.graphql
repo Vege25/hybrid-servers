@@ -1,3 +1,6 @@
+"""
+Represents a media item in the system.
+"""
 type MediaItem {
   media_id: ID!
   user_id: ID!
@@ -11,9 +14,17 @@ type MediaItem {
   tags: [Tag]
   owner: User
 }
+
+"""
+Response object for messages.
+"""
 type MessageResponse {
   message: String!
 }
+
+"""
+Represents a like on a media item.
+"""
 type Like {
   like_id: ID
   media_id: ID
@@ -21,11 +32,17 @@ type Like {
   created_at: String
 }
 
+"""
+Response object for media operations.
+"""
 type MediaResponse {
   message: String!
   media: MediaItem!
 }
 
+"""
+Input for creating a new media item.
+"""
 input MediaItemInput {
   filename: String!
   filesize: Int!
@@ -34,25 +51,47 @@ input MediaItemInput {
   description: String
 }
 
+"""
+Input for updating a media item.
+"""
 input MediaItemUpdateInput {
   title: String!
   description: String
 }
 
+"""
+Input for adding a tag to a media item.
+"""
 input AddTagToMediaItemInput {
   media_id: ID!
   tag_name: String!
 }
+
+"""
+Input for liking a media item.
+"""
 input LikeInput {
   media_id: ID!
 }
+
+"""
+Represents a count object.
+"""
 type Count {
   count: Int
 }
+
+"""
+Input for posting a comment on a media item.
+"""
 input CommentInput {
   media_id: ID!
   comment_text: String!
 }
+
+"""
+Represents a comment on a media item.
+"""
 type Comment {
   comment_id: ID
   media_id: ID
@@ -61,6 +100,9 @@ type Comment {
   created_at: String
 }
 
+"""
+Root Query type.
+"""
 type Query {
   mediaItems: [MediaItem]
   mediaItem(media_id: ID!): MediaItem
@@ -73,6 +115,9 @@ type Query {
   getCommentsByMediaId(media_id: ID!): [Comment]
 }
 
+"""
+Root Mutation type.
+"""
 type Mutation {
   createMediaItem(input: MediaItemInput!): MediaItem
   addTagToMediaItem(input: AddTagToMediaItemInput!): MediaItem

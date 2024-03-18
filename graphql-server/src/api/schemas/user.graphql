@@ -1,3 +1,6 @@
+"""
+Represents a user in the system.
+"""
 type User {
   user_id: ID!
   username: String!
@@ -5,51 +8,137 @@ type User {
   level_name: String!
   created_at: String!
 }
+
+"""
+Represents a pending friend in the system.
+"""
 type PendingFriend {
   user_id: ID!
   username: String!
   email: String!
 }
+
+"""
+Response object for user operations.
+"""
 type UserResponse {
   user: User!
   message: String!
 }
+
+"""
+Response object for validation operations.
+"""
 type ValidateResponse {
   available: Boolean!
 }
+
+"""
+Root Query type.
+"""
 type Query {
+  """
+  Get all users.
+  """
   users: [User]
+
+  """
+  Get a user by user ID.
+  """
   user(user_id: ID!): User
+
+  """
+  Get the logged-in user with token.
+  """
   userWithToken: UserResponse
+
+  """
+  Get friends of the logged-in user.
+  """
   friends: [User]
+
+  """
+  Get pending friend requests of the logged-in user.
+  """
   pendingFriends: [PendingFriend]
+
+  """
+  Check if a username is available.
+  """
   getUsernameAviable(username: String): ValidateResponse
+
+  """
+  Check if an email is available.
+  """
   getEmailAviable(email: String): ValidateResponse
 }
+
+"""
+Represents a user with only ID.
+"""
 type UserWithOnlyID {
   user_id: ID!
 }
+
+"""
+Response object for friendship operations.
+"""
 type FriendshipResponse {
   user: UserWithOnlyID!
   message: String!
 }
+
+"""
+Input for creating a new user.
+"""
 input UserInput {
   username: String! @constraint(minLength: 3, maxLength: 255)
   email: String! @constraint(format: "email")
   password: String! @constraint(pattern: "(?=.*[0-9])")
 }
+
+"""
+Response object for login operation.
+"""
 type LoginResponse {
   user: User!
   token: String!
   message: String!
 }
+
+"""
+Input for friend ID.
+"""
 input friendId {
   friend_id: ID!
 }
+
+"""
+Root Mutation type.
+"""
 type Mutation {
+  """
+  Create a new user.
+  """
   createUser(input: UserInput!): UserResponse
+
+  """
+  Log in a user.
+  """
   login(username: String!, password: String!): LoginResponse
+
+  """
+  Send a friend request.
+  """
   sendFriendRequest(input: friendId!): FriendshipResponse
+
+  """
+  Accept a friend request.
+  """
   acceptFriendRequest(input: friendId!): UserResponse
+
+  """
+  Delete a friend.
+  """
   deleteFriend(input: friendId!): FriendshipResponse
 }

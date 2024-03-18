@@ -3,7 +3,6 @@ import express from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
-import path from 'path';
 
 import {notFound, errorHandler} from './middlewares';
 import api from './api';
@@ -21,6 +20,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/uploads', express.static('uploads'));
+app.use('/docs', express.static('docs'));
 
 app.get<{}, MessageResponse>('/', (req, res) => {
   res.json({

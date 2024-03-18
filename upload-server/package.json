@@ -8,7 +8,8 @@
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "lint": "eslint --fix src test",
-    "test": "jest --detectOpenHandles --forceExit"
+    "test": "jest --detectOpenHandles --forceExit",
+    "apidoc": "apidoc -i src/ -o docs/"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
   },
   "homepage": "https://github.com/ilkkamtk/hybrid-upload-server#readme",
   "dependencies": {
+    "apidoc": "^1.2.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.3.2",
@@ -57,5 +59,12 @@
     "nodemon": "^3.0.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
+  },
+  "apidoc": {
+    "title": "My API docs",
+    "url": "https://hybrid-server.northeurope.cloudapp.azure.com/upload",
+    "order": [
+      "Upload"
+    ]
   }
 }

@@ -1,21 +1,46 @@
+"""
+Represents a tag in the system.
+"""
 type Tag {
   tag_id: ID!
   tag_name: String!
 }
 
+"""
+Root Query type.
+"""
 type Query {
+  """
+  Get all tags.
+  """
   tags: [Tag]
 }
 
+"""
+Represents a message object.
+"""
 type Message {
   message: String!
 }
 
+"""
+Input for creating a new tag.
+"""
 input TagInput {
   tag_name: String!
 }
 
+"""
+Root Mutation type.
+"""
 type Mutation {
+  """
+  Create a new tag.
+  """
   createTag(input: TagInput!): Tag
+
+  """
+  Delete a tag by its ID.
+  """
   deleteTag(input: ID!): Message
 }
