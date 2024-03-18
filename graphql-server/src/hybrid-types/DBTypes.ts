@@ -11,6 +11,11 @@ type User = {
   user_level_id: number;
   created_at: Date | string;
 };
+type PendingFriend = {
+  user_id: number;
+  username: string;
+  email: string;
+};
 
 type MediaItem = {
   media_id: number;
@@ -114,4 +119,5 @@ export type {
   TokenContent,
   MediaItemWithOwner,
   FileInfo,
+  PendingFriend,
 };

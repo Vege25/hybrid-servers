@@ -1,4 +1,8 @@
-import {User, UserWithNoPassword} from '../../hybrid-types/DBTypes';
+import {
+  PendingFriend,
+  User,
+  UserWithNoPassword,
+} from '../../hybrid-types/DBTypes';
 import {fetchData} from '../../lib/functions';
 import {LoginResponse, UserResponse} from '../../hybrid-types/MessageTypes';
 import {MyContext} from '../../local-types';
@@ -59,7 +63,7 @@ export default {
           Authorization: `Bearer ${context.user?.token}`,
         },
       };
-      const friendsDataArray = await fetchData<UserWithNoPassword[]>(
+      const friendsDataArray = await fetchData<PendingFriend[]>(
         process.env.AUTH_SERVER + '/users/pendingFriends',
         options,
       );
