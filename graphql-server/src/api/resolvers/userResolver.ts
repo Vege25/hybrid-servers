@@ -75,10 +75,10 @@ export default {
       return usernameIsAviable;
     },
     getEmailAviable: async (_parent: undefined, args: {email: string}) => {
-      const usernameIsAviable = await fetchData<Boolean>(
-        process.env.AUTH_SERVER + `/users/username/${args.email}`,
+      const emailIsAviable = await fetchData<Boolean>(
+        process.env.AUTH_SERVER + `/users/email/${args.email}`,
       );
-      return usernameIsAviable;
+      return emailIsAviable;
     },
   },
   Mutation: {
